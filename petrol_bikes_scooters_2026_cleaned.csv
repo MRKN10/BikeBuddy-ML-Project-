@@ -1,0 +1,115 @@
+No.,Bike Company,Bike Name,Engine CC,Power (bhp),Torque (Nm),Mileage (km/l),Bike Type,Price
+1,Honda,Shine 100,98.98,7.28,8.05,55,Bike,81917
+2,Honda,Shine,123.94,10.74,11.0,55,Bike,103756
+3,Honda,SP 125,123.94,10.8,10.9,60,Bike,111154
+4,Honda,SP 160,162.71,13.46,14.8,50,Bike,143794
+5,Honda,Unicorn,162.7,12.91,14.58,50,Bike,144050
+6,Honda,Hornet 2.0,184.4,17.26,15.9,42,Bike,183403
+7,Honda,NX200,184.4,17.26,15.7,40,Bike,196231
+8,Honda,CB200X,184.4,17.26,15.9,40,Bike,183335
+9,Honda,H'ness CB350,348.36,20.78,30.0,35,Bike,235003
+10,Honda,CB350,348.36,20.78,30.0,35,Bike,238556
+11,Honda,CB350RS,348.36,20.78,30.0,35,Bike,240603
+12,Honda,CB300F,293.52,24.5,25.6,30,Bike,190824
+13,Honda,CBR650R,649.0,94.0,63.0,20,Bike,1384616
+14,Honda,Activa 6G,109.51,7.73,8.9,50,Scooter,97499
+15,Honda,Activa 125,124.0,8.3,10.4,47,Scooter,111611
+16,Honda,Dio,109.51,7.85,9.3,50,Scooter,93034
+17,Honda,Dio 125,123.92,8.3,10.4,48,Scooter,113031
+18,TVS,Sport,109.7,8.08,8.7,70,Bike,85601
+19,TVS,Radeon,109.7,8.08,8.7,65,Bike,94915
+20,TVS,Star City Plus,109.7,8.08,8.7,68,Bike,92676
+21,TVS,Raider 125,124.8,11.38,11.2,56,Bike,109519
+22,TVS,Ronin,225.9,20.4,19.93,42,Bike,162091
+23,TVS,Apache RTR 160,159.7,16.04,13.85,45,Bike,130937
+24,TVS,Apache RTR 160 4V,159.7,17.55,14.73,45,Bike,143539
+25,TVS,Apache RTR 180,177.4,17.02,15.5,42,Bike,158357
+26,TVS,Apache RTR 200 4V,197.75,20.8,17.25,38,Bike,169001
+27,TVS,Apache RR 310,312.2,38.0,29.0,30,Bike,334114
+28,TVS,XL100,99.7,3.2,6.3,65,Bike,60881
+29,TVS,Jupiter,113.3,7.91,9.8,50,Scooter,97466
+30,TVS,Jupiter 125,124.8,8.15,10.5,50,Scooter,110072
+31,TVS,NTORQ 125,124.8,9.25,10.5,47,Scooter,110887
+32,TVS,NTORQ 150,149.6,11.1,13.2,40,Scooter,137230
+33,TVS,Zest 110,109.7,7.81,8.8,50,Scooter,86528
+34,TVS,Scooty Pep Plus,87.8,5.4,6.5,50,Scooter,49264
+35,Hero MotoCorp,Splendor Plus,97.2,7.91,8.05,65,Bike,95179
+36,Hero MotoCorp,Splendor Plus XTEC,97.2,7.91,8.05,60,Bike,99048
+37,Hero MotoCorp,HF Deluxe,97.2,7.91,8.05,65,Bike,82488
+38,Hero MotoCorp,Passion XTEC,113.2,9.15,9.79,56,Bike,69281
+39,Hero MotoCorp,Glamour,124.7,10.72,10.6,55,Bike,105985
+40,Hero MotoCorp,Glamour X,124.7,10.72,10.6,55,Bike,108640
+41,Hero MotoCorp,Super Splendor,124.7,10.72,10.6,55,Bike,90163
+42,Hero MotoCorp,Xtreme 125R,124.7,11.55,10.5,55,Bike,114547
+43,Hero MotoCorp,Xtreme 160R,163.0,15.0,14.0,45,Bike,130913
+44,Hero MotoCorp,Xtreme 250R,249.0,30.0,25.0,35,Bike,210262
+45,Hero MotoCorp,Karizma XMR,210.0,25.5,20.4,35,Bike,226616
+46,Hero MotoCorp,Mavrick 440,440.0,27.36,36.0,32,Bike,278925
+47,Hero MotoCorp,Xpulse 200 4V,199.6,19.1,17.35,40,Bike,181912
+48,Hero MotoCorp,Xpulse 210,210.0,24.6,20.7,35,Bike,203518
+49,Hero MotoCorp,Pleasure Plus,110.9,8.0,8.7,50,Scooter,89771
+50,Hero MotoCorp,Destini 125,124.6,9.1,10.4,50,Scooter,103210
+51,Hero MotoCorp,Xoom 110,110.9,8.15,8.7,50,Scooter,97144
+52,Bajaj,Platina 100,102.0,7.79,8.34,70,Bike,89978
+53,Bajaj,Platina 110,115.45,8.6,9.81,70,Bike,93008
+54,Bajaj,CT 110X,115.45,8.48,9.81,65,Bike,91178
+55,Bajaj,Pulsar 125,124.4,11.8,10.8,50,Bike,110194
+56,Bajaj,Pulsar 150,149.5,13.8,13.25,48,Bike,131449
+57,Bajaj,Pulsar N150,149.68,14.5,13.5,45,Bike,148608
+58,Bajaj,Pulsar NS160,160.3,17.03,14.6,45,Bike,157030
+59,Bajaj,Pulsar N160,164.82,16.0,14.65,45,Bike,154001
+60,Bajaj,Pulsar NS200,199.5,24.5,18.74,40,Bike,169897
+61,Bajaj,Pulsar N250,249.07,24.5,21.5,40,Bike,179377
+62,Bajaj,Dominar 250,248.77,27.1,23.5,35,Bike,227525
+63,Bajaj,Dominar 400,373.3,40.0,35.0,30,Bike,260290
+64,Bajaj,Freedom 125,125.0,9.5,9.7,55,Bike,127096
+65,Yamaha,FZ-FI,149.0,12.4,13.3,45,Bike,142784
+66,Yamaha,FZS-FI,149.0,12.4,13.3,45,Bike,159291
+67,Yamaha,FZ-X,149.0,12.4,13.3,45,Bike,154253
+68,Yamaha,MT-15 V2,155.0,18.4,14.1,48,Bike,204715
+69,Yamaha,R15 V4,155.0,18.4,14.2,45,Bike,215380
+70,Yamaha,R15S,155.0,18.4,14.2,45,Bike,197084
+71,Yamaha,R3,321.0,42.0,29.5,25,Bike,426306
+72,Yamaha,Fascino 125 Fi,125.0,8.2,10.3,50,Scooter,100226
+73,Yamaha,RayZR 125 Fi,125.0,8.2,10.3,50,Scooter,99191
+74,Yamaha,RayZR Street Rally,125.0,8.2,10.3,50,Scooter,112692
+75,Yamaha,Aerox 155,155.0,15.0,13.9,45,Scooter,180235
+76,Suzuki,Gixxer,155.0,13.6,13.8,45,Bike,173762
+77,Suzuki,Gixxer SF,155.0,13.6,13.8,45,Bike,176924
+78,Suzuki,V-Strom SX,249.0,26.5,22.2,35,Bike,260272
+79,Suzuki,Hayabusa,1340.0,190.0,150.0,15,Bike,2229547
+80,Suzuki,Access 125,124.0,8.7,10.2,48,Scooter,103865
+81,Suzuki,Avenis 125,124.0,8.7,10.2,48,Scooter,113410
+82,Suzuki,Burgman Street,124.0,8.6,10.2,48,Scooter,130563
+83,Suzuki,Burgman Street EX,124.0,8.6,10.2,48,Scooter,139046
+84,Royal Enfield,Hunter 350,349.0,20.2,27.0,36,Bike,169291
+85,Royal Enfield,Classic 350,349.0,20.2,27.0,35,Bike,227391
+86,Royal Enfield,Bullet 350,349.0,20.2,27.0,35,Bike,201980
+87,Royal Enfield,Meteor 350,349.0,20.2,27.0,35,Bike,242041
+88,Royal Enfield,Scram 411,411.0,24.3,32.0,30,Bike,270581
+89,Royal Enfield,Himalayan 450,452.0,40.0,40.0,30,Bike,395041
+90,Royal Enfield,Guerrilla 450,452.0,40.0,40.0,30,Bike,325282
+91,Royal Enfield,Interceptor 650,648.0,47.0,52.0,25,Bike,431631
+92,Royal Enfield,Continental GT 650,648.0,47.0,52.0,25,Bike,456757
+93,Royal Enfield,Super Meteor 650,648.0,47.0,52.0,25,Bike,514999
+94,Royal Enfield,Shotgun 650,648.0,47.0,52.0,25,Bike,508893
+95,KTM,200 Duke,199.5,25.0,19.3,35,Bike,241745
+96,KTM,250 Duke,249.0,30.0,25.0,32,Bike,288417
+97,KTM,390 Duke,399.0,46.3,39.0,28,Bike,358775
+98,KTM,250 Adventure,248.8,30.0,24.0,32,Bike,320159
+99,Kawasaki,W175,177.0,13.05,13.2,40,Bike,115000
+100,QJ Motor,SRC 250,249.0,17.4,17.5,35,Bike,137000
+101,Kawasaki,Ninja ZX-10R,998.0,200.2,210.0,15,Bike,2079000
+102,Harley-Davidson,X440,440.0,27.37,38.0,30,Bike,305612
+103,Keeway,V302C,296.0,29.5,26.5,30,Bike,449000
+104,Triumph,Rocket 3,2458.0,165.0,221.0,18,Bike,2403100
+105,Kawasaki,Vulcan S,649.0,61.0,62.4,20,Bike,813000
+106,Kawasaki,KLX 140R F,144.0,12.5,11.8,30,Bike,379000
+107,Hero MotoCorp,Glamour X 125,124.7,10.7,10.6,55,Bike,108640
+108,Jawa,42,294.7,27.3,26.8,32,Bike,225731
+109,Jawa,42 Bobber,334.0,30.2,32.7,30,Bike,268703
+110,Royal Enfield,Himalayan 440,452.0,40.0,40.0,30,Bike,299367
+111,Kawasaki,Ninja 500,451.0,45.4,42.6,25,Bike,566000
+112,Honda,CB125 Hornet,124.0,10.8,10.9,55,Bike,139551
+113,Bajaj,Pulsar NS125,124.45,11.8,11.0,50,Bike,99622
+114,Hero MotoCorp,Xtreme 160R 4V,163.2,16.9,14.6,45,Bike,166408
