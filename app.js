@@ -4,7 +4,7 @@
    ========================================================================== */
 
 // --- DATASET: BIKE MODELS & PRE-OWNED INVENTORY ---
-const BRAND_MODELS = {
+let BRAND_MODELS = {
   "Honda": [
     { name: "CB Shine", basePrice: 80000, engine: 125, mileage: 55, type: "Commuter" },
     { name: "Activa 6G", basePrice: 78000, engine: 110, mileage: 50, type: "Scooter" },
@@ -55,8 +55,270 @@ const BRAND_MODELS = {
   ]
 };
 
+function buildBrandModelsFromDataset(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) return BRAND_MODELS;
+
+  const aggregated = {};
+
+  rows.forEach((bike) => {
+    const brand = bike.brand || 'Unknown';
+    const modelName = bike.model || 'Unknown Model';
+
+    if (!aggregated[brand]) {
+      aggregated[brand] = [];
+    }
+
+    const item = aggregated[brand].find((entry) => entry.name === modelName);
+    if (!item) {
+      aggregated[brand].push({
+        name: modelName,
+        basePrice: Number(bike.price) || 0,
+        engine: 150,
+        mileage: 40,
+        type: 'Commuter'
+      });
+    }
+  });
+
+  return aggregated;
+}
+
+function normalizeCatalogBrandName(brand) {
+  const value = (brand || '').trim();
+  if (!value) return 'Unknown';
+  const lowered = value.toLowerCase();
+  if (lowered.includes('hero')) return 'Hero';
+  if (lowered.includes('honda')) return 'Honda';
+  if (lowered.includes('yamaha')) return 'Yamaha';
+  if (lowered.includes('tvs')) return 'TVS';
+  if (lowered.includes('royal enfield')) return 'Royal Enfield';
+  if (lowered.includes('bajaj')) return 'Bajaj';
+  if (lowered.includes('ktm')) return 'KTM';
+  if (lowered.includes('suzuki')) return 'Suzuki';
+  if (lowered.includes('kawasaki')) return 'Kawasaki';
+  if (lowered.includes('harley')) return 'Harley-Davidson';
+  if (lowered.includes('triumph')) return 'Triumph';
+  if (lowered.includes('jawa')) return 'Jawa';
+  return value;
+}
+
+function normalizeCatalogType(rawType, engineCC) {
+  const typeValue = (rawType || '').trim().toLowerCase();
+  const engine = Number(engineCC) || 0;
+
+  if (typeValue === 'scooter') return 'Scooter';
+  if (typeValue === 'bike') {
+    if (engine > 250) return 'Sports';
+    if (engine > 140) return 'Commuter';
+    return 'Commuter';
+  }
+  if (typeValue === 'sports') return 'Sports';
+  if (typeValue === 'cruiser') return 'Cruiser';
+  if (typeValue === 'adventure') return 'Cruiser';
+  if (engine > 250) return 'Sports';
+  if (engine > 140) return 'Commuter';
+  return 'Commuter';
+}
+
+window.LISTINGS_DATA = [];
+let LISTINGS_DATA = [];
+
+async function loadListingsData() {
+  try {
+    const response = await fetch('listings_final.csv');
+    if (!response.ok) throw new Error('Unable to load listings_final.csv');
+    const csvText = await response.text();
+    LISTINGS_DATA = parseListingsCsv(csvText);
+    window.LISTINGS_DATA = LISTINGS_DATA;
+    BRAND_MODELS = buildBrandModelsFromDataset(LISTINGS_DATA);
+  } catch (error) {
+    console.warn('Falling back to built-in pricing logic:', error);
+    LISTINGS_DATA = [];
+    window.LISTINGS_DATA = LISTINGS_DATA;
+  }
+}
+
+function parseCatalogCsv(csvText) {
+  const rows = csvText.trim().split(/\r?\n/).filter(Boolean);
+  if (!rows.length) return [];
+
+  const headers = rows.shift().split(',').map((header) => header.trim().replace(/"/g, ''));
+
+  return rows.map((row) => {
+    const values = row.split(',');
+    const record = {};
+
+    headers.forEach((header, index) => {
+      record[header] = (values[index] || '').trim().replace(/"/g, '');
+    });
+
+    return {
+      brand: normalizeCatalogBrandName(record['Bike Company']),
+      model: record['Bike Name'],
+      year: 2026,
+      km_driven: 0,
+      owner: '1st owner',
+      price: Number(record.Price || 0),
+      engine: Number(record['Engine CC'] || 0),
+      mileage: Number(record['Mileage (km/l)'] || 0),
+      type: normalizeCatalogType(record['Bike Type'], record['Engine CC'])
+    };
+  });
+}
+
+function populateFilterBrandOptions(brands = []) {
+  const brandSelect = document.getElementById('filterBrand');
+  if (!brandSelect) return;
+
+  const uniqueBrands = ['All Brands', ...Array.from(new Set(brands.filter(Boolean)))];
+  const selectedValue = brandSelect.value || 'all';
+
+  brandSelect.innerHTML = uniqueBrands.map((brand) => {
+    const value = brand === 'All Brands' ? 'all' : brand;
+    const label = brand === 'All Brands' ? 'All Brands' : brand;
+    return `<option value="${value}">${label}</option>`;
+  }).join('');
+
+  if (Array.from(brandSelect.options).some((option) => option.value === selectedValue)) {
+    brandSelect.value = selectedValue;
+  } else {
+    brandSelect.value = 'all';
+  }
+}
+
+async function loadCatalogData() {
+  try {
+    const response = await fetch('petrol_bikes_scooters_2026_cleaned.csv');
+    if (!response.ok) throw new Error('Unable to load petrol_bikes_scooters_2026_cleaned.csv');
+
+    const csvText = await response.text();
+    const catalogRows = parseCatalogCsv(csvText);
+    const inventory = mapCatalogRowsToInventory(catalogRows);
+
+    BIKES_INVENTORY = inventory;
+    currentFilteredInventory = [...BIKES_INVENTORY];
+    populateFilterBrandOptions(inventory.map((bike) => bike.brand));
+
+    if (document.getElementById('bikeGrid')) {
+      renderBikeCards(BIKES_INVENTORY, 0);
+    }
+  } catch (error) {
+    console.warn('Using fallback catalog data:', error);
+    if (document.getElementById('filterBrand')) {
+      populateFilterBrandOptions(['Yamaha', 'TVS', 'Honda', 'Royal Enfield', 'Hero', 'Bajaj', 'KTM']);
+    }
+  }
+}
+
+function parseListingsCsv(csvText) {
+  const rows = csvText.trim().split(/\r?\n/).filter(Boolean);
+  if (!rows.length) return [];
+
+  const headers = rows.shift().split(',');
+
+  return rows.map((row) => {
+    const values = row.split(',');
+    const record = {};
+
+    headers.forEach((header, index) => {
+      record[header.trim()] = (values[index] || '').trim();
+    });
+
+    return {
+      brand: record.brand,
+      model: record.model,
+      km_driven: Number(record.km_driven),
+      year: Number(record.year),
+      owner: (record.owner || '').toLowerCase(),
+      price: Number(record.price)
+    };
+  });
+}
+
+function estimateFromListingsData(brand, modelName, year, kmDriven, owner) {
+  if (!Array.isArray(LISTINGS_DATA) || LISTINGS_DATA.length === 0) return null;
+
+  const normalizedBrand = (brand || '').trim();
+  const normalizedModel = (modelName || '').trim();
+  const normalizedOwner = String(owner || '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+  const candidates = LISTINGS_DATA.filter((item) => {
+    const brandMatch = item.brand.toLowerCase() === normalizedBrand.toLowerCase();
+    const modelMatch = item.model.toLowerCase() === normalizedModel.toLowerCase();
+    return brandMatch && modelMatch;
+  });
+
+  const fallbackCandidates = LISTINGS_DATA.filter((item) => item.brand.toLowerCase() === normalizedBrand.toLowerCase());
+  const sourceList = candidates.length ? candidates : fallbackCandidates;
+
+  if (!sourceList.length) return null;
+
+  const adjusted = sourceList.map((item) => {
+    const ageDelta = Math.abs((2026 - item.year) - (2026 - year));
+    const kmDelta = Math.abs(item.km_driven - kmDriven);
+    const ownerPenalty = item.owner === normalizedOwner ? 0 : 12000;
+    const similarityScore = Math.max(1, ageDelta * 5000 + kmDelta * 1.4 + ownerPenalty);
+    return {
+      price: item.price,
+      weight: 1 / similarityScore
+    };
+  });
+
+  const totalWeight = adjusted.reduce((sum, item) => sum + item.weight, 0);
+  const weightedAverage = adjusted.reduce((sum, item) => sum + (item.price * item.weight), 0) / totalWeight;
+
+  return Math.round(weightedAverage);
+}
+
+function mapCatalogRowsToInventory(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) return [];
+
+  const unique = new Map();
+
+  rows.forEach((bike) => {
+    const key = `${bike.brand}|${bike.model}`;
+    if (unique.has(key)) return;
+
+    const engine = Number(bike.engine) || 0;
+    const mileage = Number(bike.mileage) || 0;
+    const title = `${bike.brand} ${bike.model}`;
+
+    unique.set(key, {
+      id: `dataset-${bike.brand.toLowerCase().replace(/\s+/g, '-')}-${bike.model.toLowerCase().replace(/\s+/g, '-')}`,
+      title,
+      brand: bike.brand,
+      model: bike.model,
+      year: Number(bike.year) || 2026,
+      km: `${Number(bike.km_driven || 0).toLocaleString('en-IN')} km`,
+      kmVal: Number(bike.km_driven || 0),
+      fuel: 'Petrol',
+      price: Number(bike.price) || 0,
+      badge: 'Live Listing',
+      badgeType: 'badge-blue',
+      tags: [
+        { text: 'Dataset Match', class: 'tag-good' },
+        { text: `${mileage} km/l`, class: 'tag-mileage' }
+      ],
+      image: 'assets/bike_hero_hunter.png',
+      mileage,
+      engine,
+      type: bike.type || 'Commuter',
+      owner: '1st owner',
+      location: 'Live Listing',
+      seller: 'BikeBuddy Dataset',
+      phone: '+91 00000 00000'
+    });
+  });
+
+  return Array.from(unique.values());
+}
+
+function buildInventoryFromDataset(rows) {
+  return mapCatalogRowsToInventory(rows);
+}
+
 // PRE-OWNED BIKES FOR CATALOG (16 curated options across 4 pages)
-const BIKES_INVENTORY = [
+let BIKES_INVENTORY = [
   {
     id: "b1",
     title: "Yamaha MT-15 V2",
@@ -554,67 +816,118 @@ function handleBrandChange() {
   });
 }
 
+function showToast(message) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  clearTimeout(showToast.timerId);
+  showToast.timerId = setTimeout(() => {
+    toast.remove();
+  }, 2600);
+}
+
 // --- ML PRICE PREDICTION ESTIMATOR ENGINE ---
+const OWNER_NORMALIZER = {
+  'First': '1st owner',
+  'Second': '2nd owner',
+  'Third': '3rd owner',
+  '1st owner': '1st owner',
+  '2nd owner': '2nd owner',
+  '3rd owner': '3rd owner'
+};
+
 function calculatePricePrediction(event) {
-  if (event) event.preventDefault();
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
 
-  const brand = document.getElementById('brandSelect').value;
-  const modelName = document.getElementById('modelSelect').value;
-  const year = parseInt(document.getElementById('yearSelect').value);
-  const kmDriven = parseInt(document.getElementById('kmSelect').value);
-  const owner = document.getElementById('ownerSelect').value;
+  const brandSelect = document.getElementById('brandSelect');
+  const modelSelect = document.getElementById('modelSelect');
+  const yearSelect = document.getElementById('yearSelect');
+  const kmSelect = document.getElementById('kmSelect');
+  const ownerSelect = document.getElementById('ownerSelect');
+  const fuelSelect = document.getElementById('fuelSelect');
+
+  if (!brandSelect || !modelSelect || !yearSelect || !kmSelect || !ownerSelect || !fuelSelect) {
+    return;
+  }
+
+  const brand = brandSelect.value;
+  const modelName = modelSelect.value;
+  const year = parseInt(document.getElementById('yearSelect').value, 10);
+  const kmDriven = parseInt(document.getElementById('kmSelect').value, 10);
+  const rawOwner = document.getElementById('ownerSelect').value;
   const fuel = document.getElementById('fuelSelect').value;
+  const owner = OWNER_NORMALIZER[rawOwner] || rawOwner;
 
-  // Find model reference specs
-  const modelsList = BRAND_MODELS[brand] || [];
-  let modelObj = modelsList.find(m => m.name === modelName);
-  if (!modelObj) {
-    modelObj = { basePrice: 110000, mileage: 45, engine: 150 };
-  }
+  const datasetEstimate = estimateFromListingsData(brand, modelName, year, kmDriven, owner);
 
-  const currentYear = 2026;
-  const ageYears = Math.max(0, currentYear - year);
-
-  // Depreciation Curve Matrix
-  let depRate = 0;
-  if (ageYears === 1) depRate = 0.15;
-  else if (ageYears === 2) depRate = 0.25;
-  else if (ageYears === 3) depRate = 0.35;
-  else if (ageYears === 4) depRate = 0.44;
-  else if (ageYears === 5) depRate = 0.52;
-  else depRate = 0.60;
-
-  // 1. Calculate Market Average for Year & Model
-  let marketAvg = Math.round(modelObj.basePrice * (1 - depRate));
-  
-  // 2. Condition & Mileage Impact
+  let marketAvg = 0;
   let conditionImpact = 0;
-  if (kmDriven <= 5000) conditionImpact = +1500;
-  else if (kmDriven <= 15000) conditionImpact = -2500;
-  else if (kmDriven <= 30000) conditionImpact = -5500;
-  else if (kmDriven <= 50000) conditionImpact = -9000;
-  else conditionImpact = -14000;
-
-  // Owner deduction
-  if (owner === 'Second') conditionImpact -= 2000;
-  else if (owner === 'Third') conditionImpact -= 5000;
-
-  // 3. Demand Factor Adjustment
   let demandFactor = 0;
-  if (["MT-15 V2", "Hunter 350", "Classic 350", "Duke 200"].includes(modelName)) {
-    demandFactor = 1500;
-  } else if (fuel === 'Electric') {
-    demandFactor = 2000;
+  let finalPrice = 0;
+
+  if (datasetEstimate) {
+    marketAvg = datasetEstimate;
+    const mileageAdjustment = Math.max(0, kmDriven - 20000) * 0.18;
+    const ownerAdjustment = owner === '2nd owner' ? 6000 : owner === '3rd owner' ? 12000 : 0;
+    conditionImpact = Math.round(-mileageAdjustment - ownerAdjustment);
+    demandFactor = 0;
+    finalPrice = Math.max(15000, Math.round(datasetEstimate));
+  } else {
+    const modelsList = BRAND_MODELS[brand] || [];
+    let modelObj = modelsList.find(m => m.name === modelName);
+    if (!modelObj) {
+      modelObj = { basePrice: 110000, mileage: 45, engine: 150, type: 'Commuter' };
+    }
+
+    const currentYear = 2026;
+    const ageYears = Math.max(0, currentYear - year);
+
+    const depreciationMap = {
+      0: 0.08,
+      1: 0.15,
+      2: 0.25,
+      3: 0.35,
+      4: 0.44,
+      5: 0.52
+    };
+    const depRate = depreciationMap[ageYears] || 0.60;
+
+    marketAvg = Math.round(modelObj.basePrice * (1 - depRate));
+
+    if (kmDriven <= 5000) conditionImpact = 1200;
+    else if (kmDriven <= 15000) conditionImpact = -3000;
+    else if (kmDriven <= 30000) conditionImpact = -7000;
+    else if (kmDriven <= 50000) conditionImpact = -12000;
+    else conditionImpact = -18000;
+
+    let ownerPenalty = 0;
+    if (owner === '2nd owner') ownerPenalty = 5500;
+    else if (owner === '3rd owner') ownerPenalty = 12000;
+
+    if (["MT-15 V2", "Hunter 350", "Classic 350", "Duke 200", "R15 V4"].includes(modelName)) {
+      demandFactor = 1500;
+    } else if (fuel === 'Electric') {
+      demandFactor = 2000;
+    }
+
+    const kmDrivenPenalty = Math.max(0, kmDriven - 20000) * 0.18;
+    const fuelBonus = fuel === 'Petrol' ? 1000 : 0;
+    finalPrice = marketAvg + conditionImpact + demandFactor + fuelBonus - ownerPenalty - kmDrivenPenalty;
+    if (finalPrice < 15000) finalPrice = 15000;
+    finalPrice = Math.round(finalPrice / 500) * 500;
   }
 
-  // 4. Final Price
-  let finalPrice = marketAvg + conditionImpact + demandFactor;
-  if (finalPrice < 15000) finalPrice = 15000;
-
-  // Update UI Elements with smooth animation
   formatAndDisplayPrice('resalePriceDisplay', finalPrice);
   document.getElementById('valMarketAvg').textContent = `₹ ${marketAvg.toLocaleString('en-IN')}`;
-  
+
   const condEl = document.getElementById('valConditionImpact');
   if (conditionImpact < 0) {
     condEl.className = 'breakdown-value text-red';
@@ -629,7 +942,7 @@ function calculatePricePrediction(event) {
 
   document.getElementById('valFinalPrice').textContent = `₹ ${finalPrice.toLocaleString('en-IN')}`;
 
-  showToast(`Estimated resale price updated for ${brand} ${modelName}!`);
+  showToast(`Estimated resale price updated for ${brand} ${modelName} (${owner}) using live listing data!`);
 }
 
 function formatAndDisplayPrice(elementId, targetValue) {
@@ -681,10 +994,6 @@ function renderBikeCards(bikes = currentFilteredInventory, pageIndex = 0) {
     card.innerHTML = `
       <div class="card-top-bar">
         <span class="match-badge ${bike.badgeType}">${bike.badge}</span>
-      </div>
-      
-      <div class="bike-card-img-wrapper">
-        <img src="${bike.image}" alt="${bike.title}" class="card-bike-img">
       </div>
 
       <h3 class="bike-card-name">${bike.title}</h3>
@@ -1069,8 +1378,15 @@ function initSwipeGesture() {
   }, { passive: true });
 }
 
+window.loadCatalogData = loadCatalogData;
+loadCatalogData();
+
 // --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await Promise.all([
+    loadListingsData(),
+    loadCatalogData()
+  ]);
   handleBrandChange();
   renderBikeCards(BIKES_INVENTORY, 0);
   initHero3DRotation();
